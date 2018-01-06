@@ -1,0 +1,10 @@
+package com.crypto;
+
+public class BittrexBot {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
