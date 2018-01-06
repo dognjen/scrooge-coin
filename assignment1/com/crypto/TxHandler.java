@@ -2,7 +2,9 @@ package com.crypto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.crypto.Transaction.Input;
 import com.crypto.Transaction.Output;
@@ -73,22 +75,16 @@ public class TxHandler {
     	}
 
     	// 3 
+    	Set<UTXO> uniqueUTXOs = new HashSet<>();
     	for (int index = 0; index < tx.numOutputs(); ++index) {
     		UTXO utxo = new UTXO(tx.getHash(), index);
     		
+    		if (!uniqueUTXOs.contains(utxo))
+    			uniqueUTXOs.add(utxo);
+    		else
+    			return false;
+    		
     	}
-		for (UTXO utxo : utxoPool.getAllUTXO()) {
-			int i = 0;
-			for (Transaction.Input input : tx.getInputs()) {
-				if (utxo.getTxHash().equals(input.hashCode())) {
-					i++;
-				}
-				if (i > 1) {
-					return false;
-				}
-			}
-			
-		}
     		
     	// 4
     	for (Output output : tx.getOutputs()) {
@@ -100,14 +96,11 @@ public class TxHandler {
     	// 5
     	double outputSum = 0.0, inputSum = 0.0;
     	
-    	
-    	for (UTXO utxo : utxoPool.getAllUTXO()) {
-    		for (Transaction.Input input : tx.getInputs()) {
-    			if (utxo.getTxHash().equals(input.prevTxHash)) {
-    				inputSum += utxoPool.getTxOutput(utxo).value;
-    			}
-    		}
+    	for (int index = 0; index < tx.numInputs(); ++index) {
+    		Input input = tx.getInput(index);
+    		Output output = utxoPool.getTxOutput(new UTXO(input.prevTxHash, input.outputIndex));
     		
+    		inputSum += output.value;
     	}
     	for (Output output : tx.getOutputs()) {
     		outputSum += output.value;
