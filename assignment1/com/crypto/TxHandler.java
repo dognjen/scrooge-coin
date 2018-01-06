@@ -49,7 +49,7 @@ public class TxHandler {
      *     values; and false otherwise.
      */
     public boolean isValidTx(Transaction tx) {
-        // IMPLEMENT THIS
+        // IMPLEMENTED THIS
     	if (tx == null)
     		return false;
     	
@@ -121,26 +121,24 @@ public class TxHandler {
 	 * UTXO pool as appropriate.
 	 */
 	public Transaction[] handleTxs(Transaction[] possibleTxs) {
-		// IMPLEMENT THIS
-		//Arrays.stream(possibleTxs).
+		// IMPLEMENTED THIS
+		
 		List<Transaction> newList = new ArrayList<>();
-		for (Transaction transaction : possibleTxs) {
-			if(isValidTx(transaction)) {
-				for (Transaction.Input input : transaction.getInputs()) {
-					UTXO utxo = new UTXO(input.prevTxHash, 
-							input.outputIndex);
-					if (utxoPool.contains(utxo)) {
-						utxoPool.addUTXO(utxo, transaction.getInput(0).);
-					}
-				}
-				
-				newList.add(transaction);
-				
-				
-				utxoPool.addUTXO(utxo, transaction.getOutputs().get(0));
+		
+		for (int index = 0; index < possibleTxs.length; ++index) {
+			Transaction transaction = possibleTxs[index];
+			
+			if(!isValidTx(transaction)) continue;
+			
+			for (int indexOutput = 0; indexOutput < transaction.numOutputs(); ++indexOutput) {
+				UTXO utxo = new UTXO(transaction.getHash(), indexOutput);
+				utxoPool.addUTXO(utxo, transaction.getOutput(indexOutput));
 			}
+			
+			newList.add(transaction);
 		}
 		
+		return (Transaction[]) newList.toArray();
 		
 	}
 
