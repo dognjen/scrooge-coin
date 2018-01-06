@@ -132,7 +132,8 @@ public class TxHandler {
 			newList.add(transaction);
 		}
 		
-		return (Transaction[]) newList.toArray();
+		
+		return newList.toArray(new Transaction[newList.size()]);
 		
 	}
 
