@@ -1,13 +1,7 @@
-package com.crypto;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.crypto.Transaction.Input;
-import com.crypto.Transaction.Output;
 
 /**
  * - Transaction: predstavlja transakcijo scrooge coin. Vsebuje hash transakcije in seznamv vhodov in izhodov.
@@ -21,8 +15,8 @@ import com.crypto.Transaction.Output;
  * 				
  * 
  * - Da je vhod korekten/valid, je potrebno preveriti ali je podpis v njemu (hrani podpis trenutne/ponorne/ciljne transakcije) pravilen.
- *  To storimo tako, da preverimo podpis trenutne transakcije s javnim kljuèem, ki je v ciljni destinaciji prejšnje transakcije.
- * @author Dejan Ognjenoviæ
+ *  To storimo tako, da preverimo podpis trenutne transakcije s javnim kljucem, ki je v ciljni destinaciji prejsnje transakcije.
+ * @author Dejan Ognjenovic
  *
  */
 public class TxHandler {
@@ -63,12 +57,12 @@ public class TxHandler {
     	
     	// 2
     	for (int index = 0; index < tx.numInputs(); ++index) {
-    		Input input = tx.getInput(index);
+    		Transaction.Input input = tx.getInput(index);
     		UTXO utxo = new UTXO(input.prevTxHash, input.outputIndex);
     		
     		if (!utxoPool.contains(utxo)) return false;
     		
-    		Output output = utxoPool.getTxOutput(utxo);
+    		Transaction.Output output = utxoPool.getTxOutput(utxo);
     		
     		if(!Crypto.verifySignature(output.address, tx.getRawDataToSign(index), input.signature)) 
     			return false;
@@ -87,7 +81,7 @@ public class TxHandler {
     	}
     		
     	// 4
-    	for (Output output : tx.getOutputs()) {
+    	for (Transaction.Output output : tx.getOutputs()) {
     		if (0.0 > output.value) {
     			return false;
     		}
@@ -97,12 +91,12 @@ public class TxHandler {
     	double outputSum = 0.0, inputSum = 0.0;
     	
     	for (int index = 0; index < tx.numInputs(); ++index) {
-    		Input input = tx.getInput(index);
-    		Output output = utxoPool.getTxOutput(new UTXO(input.prevTxHash, input.outputIndex));
+    		Transaction.Input input = tx.getInput(index);
+    		Transaction.Output output = utxoPool.getTxOutput(new UTXO(input.prevTxHash, input.outputIndex));
     		
     		inputSum += output.value;
     	}
-    	for (Output output : tx.getOutputs()) {
+    	for (Transaction.Output output : tx.getOutputs()) {
     		outputSum += output.value;
     	}
     	
